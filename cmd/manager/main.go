@@ -17,6 +17,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
@@ -101,10 +102,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	namespace, ok := os.LookupEnv("NAMESPACE_TO_HANDLE")
+	if ok {
+		log.Info(fmt.Sprintf("Restricting to namespace '%v'", namespace))
+	} else {
+		namespace = ""
+	}
+
 	// Create a new Cmd to provide shared dependencies and start components
 	log.Info("Setting up manager")
 	options := GetOptions()
 	mgr, err := manager.New(cfg, manager.Options{
+		Namespace:          namespace,
 		MetricsBindAddress: options.metricsAddr,
 		Port:               options.webhookPort,
 		LeaderElection:     options.enableLeaderElection,
