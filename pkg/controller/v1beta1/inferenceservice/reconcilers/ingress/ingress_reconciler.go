@@ -168,6 +168,7 @@ func (r *IngressReconciler) reconcileExternalService(isvc *v1beta1.InferenceServ
 		},
 	}
 	if err := controllerutil.SetControllerReference(isvc, desired, r.scheme); err != nil {
+		log.Info("Error could not set controller reference", "desired", desired, "scheme", r.scheme)
 		return err
 	}
 
@@ -434,6 +435,7 @@ func (ir *IngressReconciler) Reconcile(isvc *v1beta1.InferenceService) error {
 
 		//Create external service which points to local gateway
 		if err := ir.reconcileExternalService(isvc, ir.ingressConfig); err != nil {
+			log.Info("failed to reconcile external service", "isvc", isvc, "ingressConfig", ir.ingressConfig)
 			return errors.Wrapf(err, "fails to reconcile external name service")
 		}
 
@@ -492,6 +494,7 @@ func (ir *IngressReconciler) Reconcile(isvc *v1beta1.InferenceService) error {
 			Type:   v1beta1.IngressReady,
 			Status: corev1.ConditionTrue,
 		})
+		log.Info("reconciliation of isvc complete", "isvc", isvc, "status", isvc.Status)
 		return nil
 	} else {
 		return errors.Wrapf(err, "fails to parse service url")
