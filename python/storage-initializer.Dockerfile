@@ -21,10 +21,10 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY kserve/pyproject.toml kserve/poetry.lock kserve/
-RUN cd kserve && poetry install --no-root --no-interaction --no-cache --extras "storage"
-COPY kserve kserve
-RUN cd kserve && poetry install --no-interaction --no-cache --extras "storage"
+COPY kserve/pyproject.toml kserve/poetry.lock /kserve/
+RUN cd /kserve && poetry install --no-root --no-interaction --no-cache --extras "storage"
+COPY kserve /kserve
+RUN cd /kserve && poetry install --no-interaction --no-cache --extras "storage"
 
 ARG DEBIAN_FRONTEND=noninteractive
 

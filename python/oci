@@ -1,0 +1,6 @@
+#!/bin/bash
+podman build -f ./storage-initializer-alpine.Dockerfile --network=host \
+  -v/home/s.pollack/.cache/pypoetry:/root/.cache/pypoetry:rw \
+  -v/home/s.pollack/.cache/pip:/root/.cache/pip:rw \
+  --secret id=AWS_PIP_TOKEN,src=/home/s.pollack/.nx/codeartifact.token \
+  --build-arg AWS_TOKEN_TIMESTAMP=2024-07-26T14 -t nx_oci_build .

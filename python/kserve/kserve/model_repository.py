@@ -15,11 +15,13 @@
 import os
 from typing import Dict, Optional, Union
 
-from ray.serve.handle import DeploymentHandle
+#from ray.serve.handle import DeploymentHandle
 
 from .model import BaseKServeModel
 
 MODEL_MOUNT_DIRS = "/mnt/models"
+
+DeploymentHandle = str
 
 
 class ModelRepository:

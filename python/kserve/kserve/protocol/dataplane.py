@@ -21,7 +21,8 @@ import orjson
 
 from cloudevents.http import CloudEvent, from_http
 from cloudevents.sdk.converters.util import has_binary_headers
-from ray.serve.handle import DeploymentHandle
+#from ray.serve.handle import DeploymentHandle
+DeploymentHandle = str
 
 from ..constants import constants
 from ..errors import InvalidInput, ModelNotFound

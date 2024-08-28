@@ -22,9 +22,10 @@ import sys
 from multiprocessing import Process
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from ray import serve as rayserve
-from ray.serve.api import Deployment
-from ray.serve.handle import DeploymentHandle
+#from ray import serve as rayserve
+#from ray.serve.api import Deployment
+#from ray.serve.handle import DeploymentHandle
+Deployment = str
 
 from . import logging
 from .constants.constants import MAX_GRPC_MESSAGE_LENGTH
@@ -37,7 +38,7 @@ from .protocol.model_repository_extension import ModelRepositoryExtension
 from .protocol.rest.server import UvicornServer
 from .utils import utils
 from kserve.errors import NoModelReady
-
+DeploymentHandle = str
 DEFAULT_HTTP_PORT = 8080
 DEFAULT_GRPC_PORT = 8081
 
