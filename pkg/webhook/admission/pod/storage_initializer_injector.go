@@ -87,6 +87,7 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 	if !ok {
 		return nil
 	}
+	log.Info("inject storage-initializer", "name", pod.Labels[constants.InferenceServicePodLabelKey], "uri", srcURI)
 
 	// Don't inject if model agent is injected
 	if _, ok := pod.ObjectMeta.Annotations[constants.AgentShouldInjectAnnotationKey]; ok {
@@ -251,6 +252,7 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 
 	// Add init container to the spec
 	pod.Spec.InitContainers = append(pod.Spec.InitContainers, *initContainer)
+	log.Info("injected storage-initializer", "name", pod.Labels[constants.InferenceServicePodLabelKey])
 
 	return nil
 }

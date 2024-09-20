@@ -187,6 +187,7 @@ func (r *InferenceServiceReconciler) Reconcile(ctx context.Context, req ctrl.Req
 			return result, nil
 		}
 	}
+	r.Log.Info("... reconciled inference service", "isvc", isvc)
 	//Reconcile ingress
 	ingressConfig, err := v1beta1api.NewIngressConfig(r.Client)
 	if err != nil {

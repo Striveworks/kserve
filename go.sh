@@ -7,7 +7,9 @@ if [[ "$(find vendor/knative.dev/networking -maxdepth 0 -mindepth 0 -type l | wc
   done
   popd
 fi
-TAG=$(date +%Y%m%d)
+if [ -z "${TAG}" ]; then
+  TAG=$(date +%Y%m%d)
+fi
 export GOFLAGS=-mod=vendor
 set -xeo pipefail
 go build -o bin/manager ./cmd/manager

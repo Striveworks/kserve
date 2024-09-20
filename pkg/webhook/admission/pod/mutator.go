@@ -49,8 +49,10 @@ func (mutator *Mutator) Handle(ctx context.Context, req admission.Request) admis
 	}
 
 	if !needMutate(pod) {
+		log.Info("skip pod mutation", "name", pod.Labels[constants.InferenceServicePodLabelKey])
 		return admission.ValidationResponse(true, "")
 	}
+	log.Info("Handle pod mutation", "name", pod.Labels[constants.InferenceServicePodLabelKey])
 
 	configMap := &v1.ConfigMap{}
 	err := mutator.Client.Get(context.TODO(), k8types.NamespacedName{Name: constants.InferenceServiceConfigMapName, Namespace: constants.KServeNamespace}, configMap)

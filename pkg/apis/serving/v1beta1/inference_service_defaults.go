@@ -78,6 +78,8 @@ func (isvc *InferenceService) Default() {
 		panic(err)
 	}
 	isvc.DefaultInferenceService(configMap, deployConfig)
+
+	mutatorLogger.Info("Defaulted InferenceService", "namespace", isvc.Namespace, "isvc", isvc.Spec.Predictor)
 }
 
 func (isvc *InferenceService) DefaultInferenceService(config *InferenceServicesConfig, deployConfig *DeployConfig) {

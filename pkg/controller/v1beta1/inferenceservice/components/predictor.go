@@ -211,6 +211,8 @@ func (p *Predictor) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, erro
 		})
 
 	} else {
+		predictor.Default(p.inferenceServiceConfig)
+
 		container = predictor.GetContainer(isvc.ObjectMeta, isvc.Spec.Predictor.GetExtensions(), p.inferenceServiceConfig)
 
 		podSpec = v1.PodSpec(isvc.Spec.Predictor.PodSpec)

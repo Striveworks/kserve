@@ -106,6 +106,8 @@ func (k *SKLearnSpec) getDefaultsV2(metadata metav1.ObjectMeta) []v1.EnvVar {
 }
 
 func (k *SKLearnSpec) GetContainer(metadata metav1.ObjectMeta, extensions *ComponentExtensionSpec, config *InferenceServicesConfig) *v1.Container {
+	k.Container.Env = append(k.Container.Env, k.getEnvVarsV2()...)
+	k.Container.Env = append(k.Container.Env, k.getDefaultsV2(metadata)...)
 	return &k.Container
 }
 
