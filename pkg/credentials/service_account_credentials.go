@@ -212,11 +212,21 @@ func (c *CredentialBuilder) CreateSecretVolumeAndEnv(namespace string, serviceAc
 			log.Error(err, "Failed to find secret", "SecretName", secretRef.Name)
 			continue
 		}
-		if _, ok := secret.Data[s3SecretAccessKeyName]; ok {
+		if val, ok := secret.Data["KSERVE_USE_ALL_ENV"]; ok && string(val[:]) == "true" {
+			log.Info("Setting entire secret as env variables", "S3Secret", secret.Name)
+			container.EnvFrom = []v1.EnvFromSource{{
+				SecretRef: &v1.SecretEnvSource{
+					LocalObjectReference: v1.LocalObjectReference{
+						Name: secret.Name,
+					},
+				},
+			}}
+		} else if _, ok := secret.Data[s3SecretAccessKeyName]; ok {
 			log.Info("Setting secret envs for s3", "S3Secret", secret.Name)
 			envs := s3.BuildSecretEnvs(secret, &c.config.S3)
 			// Merge envs here to override values possibly present from IAM Role annotations with values from secret annotations
-			container.Env = utils.MergeEnvs(container.Env, envs)
+			// container.Env = utils.MergeEnvs(container.Env, envs)
+			container.Env = append(container.Env, envs...)
 		} else if _, ok := secret.Data[gcsCredentialFileName]; ok {
 			log.Info("Setting secret volume for gcs", "GCSSecret", secret.Name)
 			volume, volumeMount := gcs.BuildSecretVolume(secret)
