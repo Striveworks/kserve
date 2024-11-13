@@ -215,7 +215,10 @@ class Storage(object):
                     raise RuntimeError(
                         "Failed to find ca bundle file(%s)." % ca_bundle_full_path
                     )
-        s3 = boto3.resource("s3", **kwargs)
+        logger.info([f"{k}={v}" for k,v in os.environ.items() if k.startswith("AWS")])
+        logger.info(f"s3config IGNORE {kwargs}")
+        #s3 = boto3.resource("s3", **kwargs)
+        s3 = boto3.resource("s3")
         parsed = urlparse(uri, scheme="s3")
         bucket_name = parsed.netloc
         bucket_path = parsed.path.lstrip("/")
@@ -223,7 +226,9 @@ class Storage(object):
         file_count = 0
         exact_obj_found = False
         bucket = s3.Bucket(bucket_name)
+        logger.info(f"list s3://{bucket_name}/{bucket_path}")
         for obj in bucket.objects.filter(Prefix=bucket_path):
+            logger.info(f"... {obj.key}")
             # Skip where boto3 lists the directory as an object
             if obj.key.endswith("/"):
                 continue
