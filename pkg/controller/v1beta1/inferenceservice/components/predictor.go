@@ -66,6 +66,10 @@ func (p *Predictor) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, erro
 	var sRuntimeLabels map[string]string
 	var sRuntimeAnnotations map[string]string
 
+	p.Log.Info("reconciling ISVC...", "isvc", isvc)
+	isvc.Default()
+	p.Log.Info("reconciling ISVC defaulted", "isvc", isvc)
+
 	annotations := utils.Filter(isvc.Annotations, func(key string) bool {
 		return !utils.Includes(constants.ServiceAnnotationDisallowedList, key)
 	})
@@ -245,7 +249,7 @@ func (p *Predictor) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, erro
 		Annotations: utils.Union(sRuntimeAnnotations, annotations),
 	}
 
-	p.Log.Info("Resolved container", "container", container, "podSpec", podSpec)
+	p.Log.Info("Resolved container", "container", container, "podSpec", podSpec, "predictor", isvc.Spec.Predictor, "impl", predictor)
 
 	deployConfig, err := v1beta1.NewDeployConfig(p.client)
 	if err != nil {

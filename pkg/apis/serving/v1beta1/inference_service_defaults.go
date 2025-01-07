@@ -86,6 +86,7 @@ func (isvc *InferenceService) DefaultInferenceService(config *InferenceServicesC
 	deploymentMode, ok := isvc.ObjectMeta.Annotations[constants.DeploymentMode]
 
 	if !ok && deployConfig != nil {
+		mutatorLogger.Info("inner defaulting InferenceService CONFIG", "deployConfig", deployConfig)
 		if deployConfig.DefaultDeploymentMode == string(constants.ModelMeshDeployment) ||
 			deployConfig.DefaultDeploymentMode == string(constants.RawDeployment) {
 			if isvc.ObjectMeta.Annotations == nil {
@@ -97,9 +98,11 @@ func (isvc *InferenceService) DefaultInferenceService(config *InferenceServicesC
 	components := []Component{isvc.Spec.Transformer, isvc.Spec.Explainer}
 	if !ok || deploymentMode != string(constants.ModelMeshDeployment) {
 		// Only attempt to assign runtimes and apply defaulting logic for non-modelmesh predictors
+		mutatorLogger.Info("inner defaulting InferenceService", "predictor", isvc.Spec.Predictor)
 		isvc.setPredictorModelDefaults()
 		components = append(components, &isvc.Spec.Predictor)
 	} else {
+		mutatorLogger.Info("inner defaulting InferenceService MESH", "ok", ok, "deploymentMode", deploymentMode, "annotations", isvc.ObjectMeta.Annotations)
 		// If this is a modelmesh predictor, we still want to do "Exactly One" validation.
 		if err := validateExactlyOneImplementation(&isvc.Spec.Predictor); err != nil {
 			mutatorLogger.Error(ExactlyOneErrorFor(&isvc.Spec.Predictor), "Missing component implementation")
@@ -146,6 +149,12 @@ func (isvc *InferenceService) setPredictorModelDefaults() {
 
 	case isvc.Spec.Predictor.Paddle != nil:
 		isvc.assignPaddleRuntime()
+
+	case isvc.Spec.Predictor.Model != nil:
+		// pass
+
+	default:
+		mutatorLogger.Info("no matching model", "predictor", isvc.Spec.Predictor)
 	}
 }
 
