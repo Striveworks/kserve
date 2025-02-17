@@ -168,6 +168,18 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 	}
 	storageInitializerMounts = append(storageInitializerMounts, sharedVolumeWriteMount)
 
+	// Mount certificates found in userContainer
+	for _, mount := range userContainer.VolumeMounts {
+		if strings.HasPrefix(mount.MountPath, "/usr/local/share/ca-certificates") {
+			storageInitializerMounts = append(storageInitializerMounts, v1.VolumeMount{
+				Name:      mount.Name,
+				MountPath: mount.MountPath,
+				SubPath:   mount.SubPath,
+				ReadOnly:  mount.ReadOnly,
+			})
+		}
+	}
+
 	storageInitializerImage := StorageInitializerContainerImage + ":" + StorageInitializerContainerImageVersion
 	if mi.config != nil && mi.config.Image != "" {
 		storageInitializerImage = mi.config.Image
@@ -208,18 +220,6 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 	for index, envVar := range userContainer.Env {
 		if envVar.Name == constants.CustomSpecStorageUriEnvVarKey && envVar.Value != "" {
 			userContainer.Env[index].Value = constants.DefaultModelLocalMountPath
-		}
-	}
-
-	// Mount certificates found in userContainer
-	for _, mount := range userContainer.VolumeMounts {
-		if strings.HasPrefix(mount.MountPath, "/usr/local/share/ca-certificates") {
-			storageInitializerMounts = append(storageInitializerMounts, v1.VolumeMount{
-				Name:      mount.Name,
-				MountPath: mount.MountPath,
-				SubPath:   mount.SubPath,
-				ReadOnly:  mount.ReadOnly,
-			})
 		}
 	}
 
