@@ -12,9 +12,16 @@ if [ -z "${TAG}" ]; then
 fi
 export GOFLAGS=-mod=vendor
 set -xeo pipefail
-go build -o bin/manager ./cmd/manager
-REP="library/hardened/kserve/kserve-controller"
-docker build . -t 724664234782.dkr.ecr.us-east-1.amazonaws.com/${REP}:${TAG}
+if [[ "$1" == "agent" ]]; then
+  REP="library/hardened/kserve/agent"
+  DOCKERFILE="agent.Dockerfile"
+else
+  go build -o bin/manager ./cmd/manager
+  REP="library/hardened/kserve/kserve-controller"
+  DOCKERFILE="Dockerfile"
+fi
+docker build . -f ${DOCKERFILE} -t 724664234782.dkr.ecr.us-east-1.amazonaws.com/${REP}:${TAG}
 if [ -z "${PUSH}" ]; then
   docker push 724664234782.dkr.ecr.us-east-1.amazonaws.com/${REP}:${TAG}
 fi
+

@@ -211,6 +211,18 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 		}
 	}
 
+	// Mount certificates found in userContainer
+	for _, mount := range userContainer.VolumeMounts {
+		if strings.HasPrefix(mount.MountPath, "/usr/local/share/ca-certificates") {
+			storageInitializerMounts = append(storageInitializerMounts, v1.VolumeMount{
+				Name:      mount.Name,
+				MountPath: mount.MountPath,
+				SubPath:   mount.SubPath,
+				ReadOnly:  mount.ReadOnly,
+			})
+		}
+	}
+
 	// Add volumes to the PodSpec
 	pod.Spec.Volumes = append(pod.Spec.Volumes, podVolumes...)
 
