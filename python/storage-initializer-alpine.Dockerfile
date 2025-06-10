@@ -17,7 +17,11 @@ RUN apk update && \
         g++ \
         gcc \
         musl-dev \
-        py3-virtualenv \ 
+        py3-virtualenv \
+        binutils \
+        libexpat \
+        sqlite-libs xz-libs \
+        c-ares c-ares-dev \
         tini
 
 ENV STRIVE_UID=1000
@@ -59,6 +63,13 @@ COPY ./storage-initializer /storage-initializer
 RUN chmod +x /storage-initializer/scripts/initializer-entrypoint
 RUN mkdir /work
 WORKDIR /work
+
+RUN test -f /kserve/.venv/lib/python*/site-packages/certifi/cacert.pem && \
+    mv /kserve/.venv/lib/python*/site-packages/certifi/cacert.pem /usr/local/share/ca-certificates/python-certifi.pem && \
+    ln -s /etc/ssl/certs/ca-certificates.crt $(ls -d /kserve/.venv/lib/python*)/site-packages/certifi/cacert.pem
+
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
 USER 1000
 ENTRYPOINT ["/storage-initializer/scripts/initializer-entrypoint"]

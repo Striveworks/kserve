@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import subprocess
 
 from kserve.storage import Storage
 from kserve.logging import configure_logging, logger
@@ -12,6 +13,10 @@ if len(sys.argv) != 3:
 
 src_uri = sys.argv[1]
 dest_path = sys.argv[2]
+
+p = subprocess.Popen(['update-ca-certificates'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+out, err = p.communicate()
+logger.info(f'update-ca-certificates\n------ stdout -------\n{out.decode("utf-8")}\n------ stderr ------\n{err.decode("utf-8")}\n==================\n')
 
 logger.info("Initializing, args: src_uri [%s] dest_path[ [%s]" % (src_uri, dest_path))
 Storage.download(src_uri, dest_path)
